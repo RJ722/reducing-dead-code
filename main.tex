@@ -139,6 +139,9 @@
     \end{example}
 \end{frame}
 
+% Some notes:
+% Vulture also detects unreachable code by looking for code after return, break, continue and raise statements, and by searching for unsatisfiable if- and while-conditions.
+
 \subsection{How does dead code crawl in?}
 \begin{frame}{How does dead code crawl in?}
     \begin{itemize}
@@ -213,6 +216,7 @@ Repository: \url{https://github.com/jendrikseipp/vulture}
     \item{
         vulture can be installed using pip. It supports both Python2 and 3.
     }
+    \pause
     \item{
         For system wide installation, command:
         \begin{verbatim}
@@ -220,6 +224,7 @@ Repository: \url{https://github.com/jendrikseipp/vulture}
             pip install vulture --user
 
         \end{verbatim}
+        \pause
     }
     \item{
         Run vulture
@@ -228,8 +233,21 @@ Repository: \url{https://github.com/jendrikseipp/vulture}
             vulture myproject/
 
         \end{verbatim}
+        \pause
     }
 \end{itemize}
+
+That's it ;-)
+\end{frame}
+
+% Some notes:
+% The provided arguments may be Python files or directories. For each directory Vulture analyzes all contained *.py files.
+
+% After you have found and deleted dead code, run Vulture again, because it may discover more dead code.
+
+\begin{frame}{Demo}
+\alert{Hooray! Let's do a demo now!}
+    
 \end{frame}
 
 \begin{frame}{Additional arguments for vulture}{--sort-by-size}
@@ -245,6 +263,9 @@ Repository: \url{https://github.com/jendrikseipp/vulture}
 
 \end{example}
 \end{frame}
+
+% Notes:
+% This helps developers prioritize where to look for dead code first.
 
 \begin{frame}{Additional arguments for vulture}{--exclude}
     
@@ -270,8 +291,10 @@ Repository: \url{https://github.com/jendrikseipp/vulture}
 
 \begin{frame}{Additional arguments for vulture}{--min-confidence}
 Every result has a confidence assosiated with it.
-
-This flag can be used to specify a minimum confidence which the result must have in order to render the result.
+\begin{itemize}
+    \item You can use the --min-confidence flag to set the minimum confidence for code to be reported as unused.
+    \item Use --min-confidence 100 to only report code that is \alert{guaranteed} to be unused within the analyzed files.
+\end{itemize}
 
 \begin{example}
         \begin{verbatim}
@@ -285,14 +308,56 @@ This flag can be used to specify a minimum confidence which the result must have
 
 \subsection{How to handle false-positives?}
 
+\begin{frame}{False-positives}{Why do they occur?}
+\begin{itemize}
+    \item API endpoints are generally rendered as dead code, as they are user-oriented.
+    \pause
+    \item setup.py, config files, etc.
+    \pause
+    \item Code that is only called implicitly
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Handling false-positives}{Whitelists}
+\begin{itemize}
+    \item vulture provides an abstract Whitelist class (\texttt{vulture.whitelists.whitelist\_utils.Whitelist})
+    \item Sub-class \alert{Whitelist} and create an attribute named exactly the same as the dead entity.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Example whitelist}
+    \begin{block}{yourAwesomeLib.py}
+        \inputminted{python}{yourAwesomeLib.py}
+    \end{block}
+    \begin{block}{whitelistYourAwesomeLb.py:}
+        \inputminted{python}{whitelistYourAwesomeLib.py}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Marking Unused variables}
+    There are situations where you can't just remove unused variables, e.g., in tuple assignments or function signatures. Vulture will ignore these variables if they start with an underscore \textt{(e.g., \_x, y = get\_pos())}.   
+\end{frame}
 \subsection{How does vulture work?}
 
-\begin{frame}{How does vulture work?}
+\begin{frame}{How does vulture work?}{Internals}
+\begin{itemize}
+    \item Vulture uses the ast module to build abstract syntax trees for all given files.
+    \pause
+    \item While traversing all syntax trees it constructs two different sets recording the names of defined and used objects.
+    \pause
+    \item Afterwards, it reports the objects which have been defined, but not used.
+    \pause
+    \item
+    \textbf{NOTE:} This analysis ignores scopes and only takes object names into account.
+\end{itemize}
 \end{frame}
 
 \subsection*{vision}
-\begin{frame}{Where now?}
-    
+\begin{frame}{What's going on in the vulture community right now??}
+    \begin{itemize}
+        \item We're currently extending whitelists for popular projects and frameworks, like django, flask, etc.
+        \item Pull requests welcome! :-)
+    \end{itemize}
 \end{frame}
 
 \section{Automated analysis through vulture}
