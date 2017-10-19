@@ -1,0 +1,364 @@
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+\documentclass{beamer}
+
+% There are many different themes available for Beamer. A comprehensive
+% list with examples is given here:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+% You can uncomment the themes below if you would like to use a different
+% one:
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{boxes}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{default}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+% \usetheme{Warsaw}
+
+\title{Reducing dead code ratio of Python projects}
+
+% A subtitle is optional and this may be deleted
+% \subtitle{Optional Subtitle}
+
+\author{Rahul Jha}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+% \institute[Universities of Somewhere and Elsewhere] % (optional, but mostly needed)
+% {
+%   \inst{1}%
+%   Department of Computer Science\\
+%   University of Somewhere
+%   \and
+%   \inst{2}%
+%   Department of Theoretical Philosophy\\
+%   University of Elsewhere}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date{PyCon India, 2017}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Reducing dead code ratio}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+% import minted for code snippets
+\usepackage{minted}
+
+% Let's get started
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+  \tableofcontents
+  % You might wish to add the option [pausesections]
+\end{frame}
+
+% Section and subsections will appear in the presentation overview
+% and table of contents.
+\section{Motivation}
+
+\subsection{What is dead code?}
+
+\begin{frame}{What is dead code?}{Definition}
+  In computer programming, dead code is a part of the source code of a program which can never be executed because there exists no control flow path to the code from the rest of the program
+\newline
+\newline
+  Furthermore, we can classify it in two types:
+  \begin{itemize}
+      \item {
+        Unused code
+      }
+      \item {
+        Unreachable code
+      }
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{What is dead code?}{Unused code Examples}
+    \begin{example}{Something is defined, but never used}
+        \inputminted{python}{unused_code.py}
+    \end{example}   
+\end{frame}
+
+\begin{frame}{What is dead code?}{Unreachable code Examples}
+    \begin{example}{Code after return statements:}
+        \inputminted{python}{code_after_return.py}
+    \end{example}
+
+    \begin{example}{Unsatisfiable Boolean conditions for if/else/while:}
+        \inputminted{python}{unsatisfiable_conditions.py}
+    \end{example}
+\end{frame}
+
+\subsection{How does dead code crawl in?}
+\begin{frame}{How does dead code crawl in?}
+    \begin{itemize}
+        \item{
+            Refactoring
+        \pause
+        }
+        \item{
+            During debugging
+        \pause
+        }
+        \item{
+            Misspellings
+        }
+    \end{itemize}    
+\end{frame}
+
+\subsection{Why remove dead code?}
+
+% You can reveal the parts of a slide one at a time
+% with the \pause command:
+\begin{frame}{Why remove dead code?}
+  \begin{itemize}
+  \item {
+    Ensures high level of code quality
+  }
+  \item {
+    Shrinks program size.
+    \pause % The slide will pause after showing the first item
+  }
+  \item {   
+    Reduces running time \pause and therefore, reduces computation power.
+    \pause
+  }
+  % You can also specify when the content should appear
+  % by using <n->:
+  \item<4-> {
+    Sometimes, bugs are also introduced because of dead code.
+  }
+  \end{itemize}
+\end{frame}
+
+\section{Vulture}
+
+\subsection{What is vulture?}
+
+\begin{frame}{Vulture}{An overview}
+Repository: \url{https://github.com/jendrikseipp/vulture}
+
+\begin{itemize}
+    \item
+    A command line tool developed by \href{https://github.com/jendrikseipp}{Jendrik Seipp}
+    \pause
+    \item
+    It helps you find unused code in Python programs and it is useful for 
+    cleaning up and finding errors in large code bases
+    \pause
+    \item
+    If you run Vulture on both your library and test suite you can find untested code
+    \pause
+    \item
+    Also, code that is only called implicitly may be reported as unused
+\end{itemize}
+\end{frame}
+
+\subsection{How to use vulture?}
+
+\begin{frame}{How to use vulture?}{A quick tutorial}
+
+\begin{itemize}
+    \item{
+        vulture can be installed using pip. It supports both Python2 and 3.
+    }
+    \item{
+        For system wide installation, command:
+        \begin{verbatim}
+
+            pip install vulture --user
+
+        \end{verbatim}
+    }
+    \item{
+        Run vulture
+        \begin{verbatim}
+
+            vulture myproject/
+
+        \end{verbatim}
+    }
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Additional arguments for vulture}{--sort-by-size}
+
+--sort-by-size \begin{math} \implies \end{math} Sort the results according to the number of lines of code.
+
+\begin{example}
+    \begin{verbatim}
+
+        vulture myproject/ --sort-by-size
+
+    \end{verbatim}
+
+\end{example}
+\end{frame}
+
+\begin{frame}{Additional arguments for vulture}{--exclude}
+    
+--exclude \begin{math} \implies \end{math} Comma-separated list of paths to ignore 
+
+\begin{itemize}
+    \item PATTERNs can contain globbing
+    characters (*, ?, [, ]).
+    \item Treat PATTERNs without
+    globbing characters as *PATTERN*.
+\end{itemize}
+
+
+\begin{example}
+        \begin{verbatim}
+
+        vulture . --exclude=*settings.py,docs/*.py
+
+        \end{verbatim}
+        
+\end{example}
+\end{frame}
+
+\begin{frame}{Additional arguments for vulture}{--min-confidence}
+Every result has a confidence assosiated with it.
+
+This flag can be used to specify a minimum confidence which the result must have in order to render the result.
+
+\begin{example}
+        \begin{verbatim}
+
+            vulture myproject/ --min-confidence=50
+
+        \end{verbatim}
+
+\end{example}
+\end{frame}
+
+\subsection{How to handle false-positives?}
+
+\subsection{How does vulture work?}
+
+\begin{frame}{How does vulture work?}
+\end{frame}
+
+\subsection*{vision}
+\begin{frame}{Where now?}
+    
+\end{frame}
+
+\section{Automated analysis through vulture}
+
+\subsection{Adding vulture to CI tests}
+\subsection{custom script}
+\subsection{VultureBear: An integration with coala}
+\subsection{Using GitMate}
+
+% Placing a * after \section means it will not show in the
+% outline or table of contents.
+\section*{Summary}
+
+\begin{frame}{Summary}
+  \begin{itemize}
+  \item
+    The \alert{first main message} of your talk in one or two lines.
+  \item
+    The \alert{second main message} of your talk in one or two lines.
+  \item
+    Perhaps a \alert{third message}, but not more than that.
+  \end{itemize}
+  
+  \begin{itemize}
+  \item
+    Outlook
+    \begin{itemize}
+    \item
+      Something you haven't solved.
+    \item
+      Something else you haven't solved.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+% All of the following is optional and typically not needed. 
+\appendix
+\section<presentation>*{\appendixname}
+\subsection<presentation>*{For Further Reading}
+
+\begin{frame}[allowframebreaks]
+  \frametitle<presentation>{For Further Reading}
+    
+  \begin{thebibliography}{10}
+    
+  \beamertemplatebookbibitems
+  % Start with overview books.
+
+  \bibitem{Author1990}
+    A.~Author.
+    \newblock {\em Handbook of Everything}.
+    \newblock Some Press, 1990.
+ 
+    
+  \beamertemplatearticlebibitems
+  % Followed by interesting articles. Keep the list short. 
+
+  \bibitem{Someone2000}
+    S.~Someone.
+    \newblock On this and that.
+    \newblock {\em Journal of This and That}, 2(1):50--100,
+    2000.
+  \end{thebibliography}
+\end{frame}
+
+\end{document}
+
+
