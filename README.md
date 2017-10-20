@@ -12,5 +12,10 @@ One part of this talk is to discuss how to automate testing for dead code with V
 - Integration with automatic analysis tools like [GitMate](https://gitmate.io), etc. for automatic code-reviews with native support for Github and Gitlab.
 
 
+## Download
+
+You may find the most recent version of the presentation here: https://github.com/RJ722/reducing-dead-code/releases
+
 Author: RJ722
+
 PyCon India, 2017
