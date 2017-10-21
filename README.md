@@ -9,7 +9,6 @@ One part of this talk is to discuss how to automate testing for dead code with V
 - Adding vulture to your continuous integration testing.
 - A script using the Vulture API for custom tests.
 - [VultureBear](https://github.com/coala/coala-bears/blob/master/bears/python/VultureBear.py): Integration with [coala](https://coala.io) - a static code analysis tool.
-- Integration with automatic analysis tools like [GitMate](https://gitmate.io), etc. for automatic code-reviews with native support for Github and Gitlab.
 
 
 ## Download
