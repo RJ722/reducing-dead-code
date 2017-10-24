@@ -1,7 +1,6 @@
 # A marvellous script which prints Hello World
 
-def a():
-    return "Hello"
+a = 'Hello'
 
 def hello_world_string():
     return "Hello World"

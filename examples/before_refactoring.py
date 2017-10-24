@@ -1,12 +1,11 @@
 # A marvellous script which prints Hello World
 
-def a():
-    return "Hello"
+a = 'Hello'
 
 def b():
     return "World"
 
 def c():
-    print(a() + ' ' + b())
+    print(a + ' ' + b())
 
 c()
