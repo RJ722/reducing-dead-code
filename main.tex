@@ -14,19 +14,17 @@
 
 \usetheme{Madrid}
 
-\title{Reducing dead code ratio of Python projects}
+\title{Removing Dead Code}
 \author{Rahul Jha}
 \date{PyCon India, 2017}
-\subject{Reducing dead code ratio}
+\subject{Removing dead code}
 
 
-\AtBeginSubsection[]
-{
-  \begin{frame}<beamer>{Outline}
+ \AtBeginSubsection[]{
+    \begin{frame}<beamer>{Outline}
     \tableofcontents[currentsection,currentsubsection]
-  \end{frame}
+   \end{frame}
 }
-
 % import minted for code snippets
 \usepackage{minted}
 
@@ -34,6 +32,19 @@
 
 \begin{frame}
   \titlepage
+\end{frame}
+
+
+\begin{frame}{About Me}
+    Rahul Jha
+    \begin{itemize}
+        \item
+        Electronics Engineering Student at ZHCET, AMU, Aligarh
+        \item
+        Website: \url{https://rj722.tech}
+        \item
+        Drop me a hello at \texttt{rahul722j@gmail.com}
+    \end{itemize}
 \end{frame}
 
 \begin{frame}{Outline}
@@ -45,10 +56,10 @@
 \subsection{What is dead code?}
 
 \begin{frame}{What is dead code?}{Definition}
-    In computer programming, dead code is a part of the source code of a program which can never be executed because there exists no control flow path to the code from the rest of the program
+    Dead code is the part of the source code of a program which can never be executed because there exists no control flow path to the code from the rest of the program.
     \newline
     \newline
-    Furthermore, we can classify it in two types:
+    Furthermore, we can classify it into two types:
     \begin{itemize}
         \item {
             Unused code
@@ -87,6 +98,10 @@
             Refactoring
         \pause
         \item
+            Programming errors
+        \note{When we think a condition is satisfied, but it is not}
+        \pause
+        \item
             During debugging
         \pause
         \item
@@ -99,17 +114,17 @@
 \begin{frame}{Why remove dead code?}
   \begin{itemize}
   \item
-    Ensures high level of code quality
+    Sometimes, bugs are also introduced because of dead code
     \pause
   \item
-    Shrinks program size.
+    Ensures high level of code quality
+    \note{Sometimes, people are confused as to why this function exists}
     \pause
-  \item  
-    Reduces running time \pause and therefore, reduces computation power.
+  \item
+    Shrinks program size
     \pause
-  \item<4-> {
-    Sometimes, bugs are also introduced because of dead code.
-  }
+  \item
+    Maintenance overhead
   \end{itemize}
 \end{frame}
 
@@ -125,16 +140,13 @@ Repository: \url{https://github.com/jendrikseipp/vulture}
     A command line tool developed by \href{https://github.com/jendrikseipp}{Jendrik Seipp}
         \pause
     \item
-    It helps you find unused code in Python programs and it is useful for 
-    cleaning up and finding errors in large code bases
-        \pause
-    \item It also has an API which can be utilised to programatically check for dead code.
+    Finds unused code in Python programs
         \pause
     \item
     If you run Vulture on both your library and test suite you can find untested code
         \pause
     \item
-    Also, code that is only called implicitly may be reported as unused
+    Sometimes, reports false positives.
 \end{itemize}
 \end{frame}
 
@@ -144,14 +156,14 @@ Repository: \url{https://github.com/jendrikseipp/vulture}
 
 \begin{itemize}
     \item{
-        vulture can be installed using pip. It supports both Python2 and 3.
+        vulture can be installed using pip. It supports both Python 2 and 3.
     }
     \pause
     \item{
         For system wide installation, command:
         \begin{verbatim}
 
-            pip install vulture --user
+            pip install vulture
 
         \end{verbatim}
         \pause
@@ -167,16 +179,16 @@ Repository: \url{https://github.com/jendrikseipp/vulture}
     }
 \end{itemize}
 
-That's it ;-)
+That's it :-)
 \end{frame}
 
 %% NOTES:
 %% The provided arguments may be Python files or directories. For each directory Vulture analyzes all contained *.py files.
 %% After you have found and deleted dead code, run Vulture again, because it may discover more dead code.
 
-\begin{frame}{Additional arguments for vulture}{--sort-by-size}
+\begin{frame}{Additional arguments for vulture}{\texttt{--sort-by-size}}
 
---sort-by-size \begin{math} \implies \end{math} Sort the results according to the number of lines of code.
+\texttt{--sort-by-size} \begin{math} \implies \end{math} Sort the results by the number of lines of code.
 
 \begin{example}
     \begin{verbatim}
@@ -191,9 +203,9 @@ That's it ;-)
 %% NOTES:
 %% This helps developers prioritize where to look for dead code first.
 
-\begin{frame}{Additional arguments for vulture}{--exclude}
+\begin{frame}{Additional arguments for vulture}{\texttt{--exclude}}
     
---exclude \begin{math} \implies \end{math} Comma-separated list of paths to ignore 
+\texttt{--exclude PATTERN} \begin{math} \implies \end{math} Comma-separated list of paths to ignore 
 
 \begin{itemize}
     \item
@@ -215,13 +227,13 @@ That's it ;-)
 \end{example}
 \end{frame}
 
-\begin{frame}{Additional arguments for vulture}{--min-confidence}
+\begin{frame}{Additional arguments for vulture}{\texttt{--min-confidence}}
     Every result has a confidence associated with it.
     \begin{itemize}
         \item
-            You can use the --min-confidence flag to set the minimum confidence for code to be reported as unused.
+            You can use the \texttt{--min-confidence} flag to set the minimum confidence for code to be reported as unused.
         \item
-            Use --min-confidence 100 to only report code that is \alert{guaranteed} to be unused within the analyzed files.
+            Use \textt{--min-confidence} 100 to only report code that is \alert{guaranteed} to be unused within the analyzed files.
     \end{itemize}
     
     \begin{example}
@@ -238,7 +250,7 @@ That's it ;-)
     
 \end{frame}
 
-\subsection{How to handle false-positives?}
+\subsection{False-positives?}
 
 \begin{frame}{False-positives}{Why do they occur?}
     \begin{itemize}
@@ -256,23 +268,24 @@ That's it ;-)
 \begin{frame}{Handling false-positives}{Whitelists}
     \begin{itemize}
         \item
-            vulture provides an abstract Whitelist class (\texttt{vulture.whitelists.whitelist\_utils.Whitelist})
+            vulture provides an abstract \texttt{Whitelist} class
         \item
             Sub-class \alert{Whitelist} and create an attribute named exactly the same as the dead entity.
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Example whitelist}
-    \begin{block}{yourAwesomeLib.py}
+    \begin{block}{awesome\_lib.py}
         \inputminted{python}{content/yourAwesomeLib.py}
     \end{block}
-    \begin{block}{whitelistYourAwesomeLb.py:}
+    \begin{block}{whitelist\_awesome\_lib.py:}
         \inputminted{python}{content/whitelistYourAwesomeLib.py}
     \end{block}
 \end{frame}
 
-\begin{frame}{Marking Unused variables}
-    There are situations where you can't just remove unused variables, e.g., in tuple assignments or function signatures. Vulture will ignore these variables if they start with an underscore \textt{(e.g., \_x, y = get\_pos())}.   
+\begin{frame}{Marking unused variables}
+    Vulture will ignore the variables if they start with an underscore
+    e.g., in tuple assignments or function signatures.  \textt{(e.g., \_x, y = get\_pos())}.
 \end{frame}
 
 \subsection{How does vulture work?}
@@ -280,21 +293,18 @@ That's it ;-)
 \begin{frame}{How does vulture work?}{Internals}
 \begin{itemize}
     \item
-        Vulture uses the ast module to build abstract syntax trees for all given files.
+        Vulture uses the \texttt{ast} module to build abstract syntax trees for all given files.
     \pause
     \item
-        While traversing all syntax trees, it constructs two different sets recording the names of defined and used objects respectively.
+        Constructs two different sets recording the names of defined and used objects.
     \pause
     \item
         Afterwards, it reports the objects which have been defined, but not used.
-    \pause
-    \item
-        \textbf{NOTE:} This analysis ignores scopes and only takes object names into account.
 \end{itemize}
 \end{frame}
 
 \subsection*{vision}
-\begin{frame}{What's going on in the vulture community right now??}
+\begin{frame}{What's going on in the vulture community right now?}
     \begin{itemize}
         \item
             We're currently extending whitelists for popular projects and frameworks, like django, flask, etc.
@@ -339,10 +349,8 @@ That's it ;-)
     \begin{example}
         \url{https://github.com/coala/coala-bears/blob/master/bears/python/VultureBear.py}
     \end{example}
-    \pause
-    \begin{itemize}
-        \item NOTE: We can also use this custom script in CI tests.
-    \end{itemize}
+
+\note{NOTE: We can also use this custom script in CI tests.}
 \end{frame}
 
 
@@ -351,7 +359,6 @@ That's it ;-)
 
 \begin{frame}{coala}{Code Analysis Application}
     coala is a static code analysis application. It provides a unified interface for linting and fixing code.
-    \pause
 
     A \alert{bear} is is meant to do some analysis on source code. The source code will be provided by coala so the bear doesn’t have to care where it comes from or where it goes.
 
@@ -398,10 +405,13 @@ That's it ;-)
   \end{thebibliography}
 \end{frame}
 
-\begin{frame}%%     1
-\begin{center}
-    \Huge Thank You!
-\end{center}
+\begin{frame}{Conclusion}
+    \begin{itemize}
+        \item
+            Install vulture using: \texttt{pip install vulture}
+        \item
+            Run using \texttt{vulture myproject/ --exclude=settings.py}
+    \end{itemize}
 \end{frame}
 
 \end{document}
